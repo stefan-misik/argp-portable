@@ -1,2 +1,2 @@
 # argp-portable
-Platform-independent GNU-like command line argument parser
+Simple platform-independent GNU-like command line argument parser
