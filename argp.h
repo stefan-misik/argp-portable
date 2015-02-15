@@ -11,13 +11,13 @@ typedef void (*argp_callback_t)(
 );
 
 /**
- * \brief 
+ * \brief This structure describes properties of each known parameter
  */
 typedef struct
 {
-    int             id;
-    const char *    long_param;
-    int             has_value;
+	int             id;			/** < Identification of parameter, if is printable, can be used as short switch, e.g. -i */
+	const char *    long_param;	/** < String describing long parameter form, e.g. --info */
+	int             has_value;	/** < If non-zero, parser will expect value after switch */
 } argp_params_t;
 
 /**
@@ -25,11 +25,9 @@ typedef struct
  */
 typedef enum
 {
-    ARGP_OK = 0,
-    ARGP_NO_PARAM
+	ARGP_OK = 0,	/** < Everything is ok */
+	ARGP_NO_PARAM	/** < No arguments were supplied */
 } argp_result_t;
-
-
 
 /**
  * \brief Function to parse array of argumets to application parameters
@@ -49,13 +47,6 @@ argp_result_t argp_parse(
     void * data,
     int argc,
     const char ** argv    
-);
-
-/**
- * \brief Print usage string to standard output
- */
-void arg_print_usage(
-    void
 );
 
 
