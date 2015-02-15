@@ -69,7 +69,7 @@ argp_result_t argp_parse(
     char c;
     static const char c0 = '\0';
     char long_param[ARGP_PARAM_MAX_LENGTH];
-    int long_param_pos;
+    int long_param_pos = 0;
     const argp_params_t * cur_param = NULL;
     
     /* Check for number of arguments */
@@ -187,13 +187,20 @@ argp_result_t argp_parse(
                     case '\0':                   
                         /* Add terminating zero after long_param name string */
                         long_param[long_param_pos] = '\0';
+                        long_param_pos = 0;
 
                         /* Get info about long_param parameter */
                         if(0 == argp_get_conf_by_long(params, &cur_param, 
                             long_param))
                         {
                             if(cur_param->has_value > 0 && '-' != *cur_arg)
-                            {  
+                            {                                
+                                if('\0' == *cur_arg)
+                                {
+                                    /* After = sign, there are no parameters */
+                                    cur_arg = NULL;
+                                }
+                                
                                 cb(cur_param->id, cur_arg, data);
                                 cur_arg = &c0;                            
                             }
@@ -208,6 +215,7 @@ argp_result_t argp_parse(
                         {
                             /* Unknown long switch */
                             cb(-256, long_param, data);
+                            state = ARGP_PLAIN_VALUE;
                         }
                         break;
                         
@@ -238,6 +246,26 @@ argp_result_t argp_parse(
                 }
                 break;
         }        
+    }
+        
+    if(long_param_pos > 0)
+    {
+        /* There is unprocessed long switch */
+        long_param[long_param_pos] = '\0';
+        long_param_pos = 0;
+        
+        /* Get info about long_param parameter */
+        if(0 == argp_get_conf_by_long(params, &cur_param, 
+            long_param))
+        {
+            cb(cur_param->id, NULL, data);            
+            cur_param = NULL;
+        }
+        else
+        {
+            /* Unknown long switch */
+            cb(-256, long_param, data);            
+        }
     }
     
     /* Last parameter was expecting data, but no data were supplied */

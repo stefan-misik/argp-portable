@@ -12,14 +12,29 @@ argp_params_t argp_conf[] =
 
 void cb (int id, const char * val, void * data)
 {
-    if(NULL != val)
-    {
-        printf("Id: %c, Value: %s\n", id, val);
-    }
-    else
-    {
-        printf("Id: %c\n", id);
-    }
+	if (id > 0)
+	{
+		if (NULL != val)
+		{
+			printf("Id: %c, Value: %s\n", id, val);
+		}
+		else
+		{
+			printf("Id: %c\n", id);
+		}
+	}
+	else if (0 == id)
+	{
+		printf("Plain value: %s\n", val);
+	}
+	else if (id > -256)
+	{
+		printf("Unknown short switch: %c\n", -id);
+	}
+	else
+	{
+		printf("Unknown long switch: %s\n", val);
+	}
 }
 
 int main(int argc, char** argv) 
