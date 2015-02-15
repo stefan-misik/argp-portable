@@ -3,10 +3,6 @@
 #include <string.h>
 
 /******************************************************************************/
-#define ARGP_PARAM_MAX_LENGTH   64
-
-
-/******************************************************************************/
 typedef enum
 {
     ARGP_PLAIN_VALUE = 0,
@@ -68,7 +64,7 @@ argp_result_t argp_parse(
     int next_arg_no = 1;
     char c;
     static const char c0 = '\0';
-    char long_param[ARGP_PARAM_MAX_LENGTH];
+    char long_param[ARGP_PARAM_MAX_LENGTH + 1];
     int long_param_pos = 0;
     const argp_params_t * cur_param = NULL;
     
@@ -214,14 +210,27 @@ argp_result_t argp_parse(
                         else
                         {
                             /* Unknown long switch */
-                            cb(-256, long_param, data);
+                            cb(ARGP_ID_UNKNOWN_LONG_SWITCH, long_param, data);
                             state = ARGP_PLAIN_VALUE;
                         }
                         break;
                         
-                    default:                
-                        long_param[long_param_pos++] = c;
-                        cur_arg++;
+                    default:  
+                        if(long_param_pos < ARGP_PARAM_MAX_LENGTH)
+                        {
+                            long_param[long_param_pos++] = c;
+                            cur_arg++;
+                        }
+                        else
+                        {
+                            /* Buffer for long param switch is not big enough*/
+                            long_param[long_param_pos] = '\0';
+                            long_param_pos = 0;
+                            /* Tell it to callback */
+                            cb(ARGP_ID_LONG_SWITCH_BUFFER_OF, long_param, data);
+                            cur_arg = &c0;
+                            state = ARGP_PLAIN_VALUE;
+                        }
                         break;
                 }
                 break;

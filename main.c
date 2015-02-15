@@ -31,9 +31,18 @@ void cb (int id, const char * val, void * data)
 	{
 		printf("Unknown short switch: %c\n", -id);
 	}
-	else
+	else if (ARGP_ID_UNKNOWN_LONG_SWITCH == id)
 	{
 		printf("Unknown long switch: %s\n", val);
+	}
+	else if (ARGP_ID_LONG_SWITCH_BUFFER_OF == id)
+	{
+		printf("Long switch buffer overflow, switch starts with: %s\n", val);
+	}
+	else
+	{
+		/* Program should never get here */
+		printf("Unknown error. \n");
 	}
 }
 

@@ -2,6 +2,21 @@
 #define	ARGP_H
 
 /**
+ * \brief Max. number of long switch's characters
+ */
+#define ARGP_PARAM_MAX_LENGTH   4
+
+/**
+ * \brief Id number returned to callback on unknown long switch
+ */
+#define ARGP_ID_UNKNOWN_LONG_SWITCH     -256
+
+/**
+ * \brief Id number returned to callback on long switch buffer overflow
+ */
+#define ARGP_ID_LONG_SWITCH_BUFFER_OF   -257
+
+/**
  * \brief Calback function
  */
 typedef void (*argp_callback_t)(
