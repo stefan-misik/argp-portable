@@ -10,7 +10,7 @@ argp_params_t argp_conf[] =
     {0}
 };
 
-void cb (int id, const char * val, void * data)
+int static cb (int id, const char * val, void * data)
 {
 	if (id > 0)
 	{
@@ -44,6 +44,7 @@ void cb (int id, const char * val, void * data)
 		/* Program should never get here */
 		printf("Unknown error. \n");
 	}
+	return ARGP_OK;
 }
 
 int main(int argc, char** argv) 

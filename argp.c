@@ -51,7 +51,7 @@ int static argp_get_conf_by_long(
 }
 
 /******************************************************************************/
-argp_result_t argp_parse(
+int argp_parse(
     const argp_params_t * params,
     argp_callback_t cb,
     void * data,
@@ -67,6 +67,7 @@ argp_result_t argp_parse(
     char long_param[ARGP_PARAM_MAX_LENGTH + 1];
     int long_param_pos = 0;
     const argp_params_t * cur_param = NULL;
+    int cb_ret;
     
     /* Check for number of arguments */
     if(argc <= 1)
@@ -106,7 +107,11 @@ argp_result_t argp_parse(
                 else
                 {
                     /* This is a plain value argument, send it to callback */
-                    cb(0, cur_arg, data);
+                    cb_ret = cb(0, cur_arg, data);
+                    if(cb_ret > 0)
+                    {
+                        return cb_ret;
+                    }
                     /* This argument is processed */
                     cur_arg = &c0;
                 }
@@ -144,7 +149,11 @@ argp_result_t argp_parse(
                                  * is placed after the switch */
                                 if('\0' != *cur_arg)
                                 {
-                                    cb(cur_param->id, cur_arg, data);
+                                    cb_ret = cb(cur_param->id, cur_arg, data);
+                                    if(cb_ret > 0)
+                                    {
+                                        return cb_ret;
+                                    }
                                     cur_param = NULL;
                                     cur_arg = &c0;
                                     state = ARGP_PLAIN_VALUE;
@@ -158,7 +167,11 @@ argp_result_t argp_parse(
                             else
                             {
                                 /* Switch does not have value */
-                                cb(cur_param->id, NULL, data);
+                                cb_ret = cb(cur_param->id, NULL, data);
+                                if(cb_ret > 0)
+                                {
+                                    return cb_ret;
+                                }
                                 cur_param = NULL;
                                 /* Stay in ARGP_PARAM_SHORT state, other 
                                  * switches may follow */
@@ -167,7 +180,11 @@ argp_result_t argp_parse(
                         else
                         {
                             /* Unknown short switch */
-                            cb(-c, NULL, data);
+                            cb_ret = cb(-c, NULL, data);
+                            if(cb_ret > 0)
+                            {
+                                return cb_ret;
+                            }
                         }
                         break;
                 }
@@ -197,12 +214,20 @@ argp_result_t argp_parse(
                                     cur_arg = NULL;
                                 }
                                 
-                                cb(cur_param->id, cur_arg, data);
+                                cb_ret = cb(cur_param->id, cur_arg, data);
+                                if(cb_ret > 0)
+                                {
+                                    return cb_ret;
+                                }
                                 cur_arg = &c0;                            
                             }
                             else
                             {
-                                cb(cur_param->id, NULL, data);                            
+                                cb_ret = cb(cur_param->id, NULL, data);
+                                if(cb_ret > 0)
+                                {
+                                    return cb_ret;
+                                }
                             }
                             state = ARGP_PLAIN_VALUE;
                             cur_param = NULL;
@@ -210,7 +235,12 @@ argp_result_t argp_parse(
                         else
                         {
                             /* Unknown long switch */
-                            cb(ARGP_ID_UNKNOWN_LONG_SWITCH, long_param, data);
+                            cb_ret = cb(ARGP_ID_UNKNOWN_LONG_SWITCH, 
+                                long_param, data);
+                            if(cb_ret > 0)
+                            {
+                                return cb_ret;
+                            }
                             state = ARGP_PLAIN_VALUE;
                         }
                         break;
@@ -227,7 +257,12 @@ argp_result_t argp_parse(
                             long_param[long_param_pos] = '\0';
                             long_param_pos = 0;
                             /* Tell it to callback */
-                            cb(ARGP_ID_LONG_SWITCH_BUFFER_OF, long_param, data);
+                            cb_ret = cb(ARGP_ID_LONG_SWITCH_BUFFER_OF, 
+                                long_param, data);
+                            if(cb_ret > 0)
+                            {
+                                return cb_ret;
+                            }
                             cur_arg = &c0;
                             state = ARGP_PLAIN_VALUE;
                         }
@@ -240,7 +275,11 @@ argp_result_t argp_parse(
                 if('-' == *cur_arg)
                 {
                     /* No value was supplied */
-                    cb(cur_param->id, NULL, data);
+                    cb_ret = cb(cur_param->id, NULL, data);
+                    if(cb_ret > 0)
+                    {
+                        return cb_ret;
+                    }
                     cur_param = NULL;                    
                     state = ARGP_PARAM_SHORT;
                     cur_arg++;
@@ -248,7 +287,11 @@ argp_result_t argp_parse(
                 else
                 {
                     /* Value was supplied */
-                    cb(cur_param->id, cur_arg, data);
+                    cb_ret = cb(cur_param->id, cur_arg, data);
+                    if(cb_ret > 0)
+                    {
+                        return cb_ret;
+                    }
                     cur_param = NULL;
                     state = ARGP_PLAIN_VALUE;
                     cur_arg = &c0;
@@ -268,14 +311,22 @@ argp_result_t argp_parse(
             long_param))        
         {
             /* Unknown long switch */
-            cb(-256, long_param, data);            
+            cb_ret = cb(-256, long_param, data);
+            if(cb_ret > 0)
+            {
+                return cb_ret;
+            }
         }
     }
     
     /* Last parameter was expecting data, but no data were supplied */
     if(NULL != cur_param)
     {
-        cb(cur_param->id, NULL, data);
+        cb_ret = cb(cur_param->id, NULL, data);
+        if(cb_ret > 0)
+        {
+            return cb_ret;
+        }
         cur_param = NULL;
     }
     
