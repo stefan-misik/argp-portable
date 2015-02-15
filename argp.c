@@ -255,13 +255,8 @@ argp_result_t argp_parse(
         long_param_pos = 0;
         
         /* Get info about long_param parameter */
-        if(0 == argp_get_conf_by_long(params, &cur_param, 
-            long_param))
-        {
-            cb(cur_param->id, NULL, data);            
-            cur_param = NULL;
-        }
-        else
+        if(0 != argp_get_conf_by_long(params, &cur_param, 
+            long_param))        
         {
             /* Unknown long switch */
             cb(-256, long_param, data);            
