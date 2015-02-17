@@ -37,7 +37,7 @@ int static cb (int id, const char * val, void * data)
 	}
 	else if (ARGP_ID_LONG_SWITCH_BUFFER_OF == id)
 	{
-		printf("Long switch buffer overflow, switch starts with: %s\n", val);
+		printf("Long switch buffer overflow, at switch starting with: %s\n", val);
 	}
 	else
 	{
