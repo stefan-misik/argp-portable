@@ -32,6 +32,29 @@ int static argp_get_conf_by_id(
 }
 
 /******************************************************************************/
+int static argp_longest_switch_len(
+    const argp_params_t *  params
+)
+{
+    int ret = 4;
+    int len;
+    while(params->id > 0)
+    {
+        if (NULL != params->long_param)
+        {
+            len = strlen(params->long_param);
+            if(len > ret)
+            {
+                ret = len;
+            }
+        }
+        params ++;        
+    }
+    
+    return ret;
+}
+
+/******************************************************************************/
 int static argp_get_conf_by_long(
     const argp_params_t *  params,
     const argp_params_t ** param,
@@ -40,10 +63,13 @@ int static argp_get_conf_by_long(
 {
     while(params->id > 0)
     {
-        if(0 == strcmp(long_param, params->long_param))
+        if (NULL != params->long_param)
         {
-            *param = params;
-            return 0;
+            if(0 == strcmp(long_param, params->long_param))
+            {
+                *param = params;
+                return 0;
+            }
         }
         params ++;
     }
@@ -64,7 +90,8 @@ int argp_parse(
     int next_arg_no = 1;
     char c;
     static const char c0 = '\0';
-    char long_param[ARGP_PARAM_MAX_LENGTH + 1];
+    const int long_param_max_length = argp_longest_switch_len(params);
+    char long_param[long_param_max_length + 1];
     int long_param_pos = 0;
     const argp_params_t * cur_param = NULL;
     int cb_ret;
@@ -246,7 +273,7 @@ int argp_parse(
                         break;
                         
                     default:  
-                        if(long_param_pos < ARGP_PARAM_MAX_LENGTH)
+                        if(long_param_pos < long_param_max_length)
                         {
                             long_param[long_param_pos++] = c;
                             cur_arg++;

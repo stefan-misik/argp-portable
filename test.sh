@@ -3,10 +3,10 @@ set -x
 
 make
 
-./argp-test -a"abc def"
-./argp-test -a "abc def"
-./argp-test -iaabc
+./argp-test -t"abc def"
+./argp-test -t "abc def"
+./argp-test -itabc
 
-./argp-test -b --info --ab=abc
-./argp-test --ba --ababc
-./argp-test --ab= -i --info 
+./argp-test -b --info --test=abc
+./argp-test --ts --abbabc
+./argp-test --test= -i --info 

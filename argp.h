@@ -2,11 +2,6 @@
 #define	ARGP_H
 
 /**
- * \brief Max. number of long switch's characters
- */
-#define ARGP_PARAM_MAX_LENGTH   15
-
-/**
  * \brief Id number returned to callback on unknown long switch
  */
 #define ARGP_ID_UNKNOWN_LONG_SWITCH     -256
