@@ -29,3 +29,7 @@
 *.hex
 
 argp-test
+*.sdf
+*suo
+Debug/
+Release/

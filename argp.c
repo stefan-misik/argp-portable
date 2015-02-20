@@ -1,6 +1,7 @@
 #include "argp.h"
 
 #include <string.h>
+#include <stdlib.h>
 
 /******************************************************************************/
 typedef enum
@@ -91,14 +92,22 @@ int argp_parse(
     char c;
     static const char c0 = '\0';
     const int long_param_max_length = argp_longest_switch_len(params);
-    char long_param[long_param_max_length + 1];
+    char * long_param = 
+        (char*)malloc((long_param_max_length + 1) * sizeof(char));
     int long_param_pos = 0;
     const argp_params_t * cur_param = NULL;
     int cb_ret;
     
+    /* Check memory allocation status */
+    if(NULL == long_param)
+    {
+        return ARGP_NO_MEM;
+    }
+    
     /* Check for number of arguments */
     if(argc <= 1)
     {
+        free(long_param);
         return ARGP_NO_PARAM;
     }
     
@@ -137,6 +146,7 @@ int argp_parse(
                     cb_ret = cb(0, cur_arg, data);
                     if(cb_ret > 0)
                     {
+                        free(long_param);
                         return cb_ret;
                     }
                     /* This argument is processed */
@@ -179,6 +189,7 @@ int argp_parse(
                                     cb_ret = cb(cur_param->id, cur_arg, data);
                                     if(cb_ret > 0)
                                     {
+                                        free(long_param);
                                         return cb_ret;
                                     }
                                     cur_param = NULL;
@@ -197,6 +208,7 @@ int argp_parse(
                                 cb_ret = cb(cur_param->id, NULL, data);
                                 if(cb_ret > 0)
                                 {
+                                    free(long_param);
                                     return cb_ret;
                                 }
                                 cur_param = NULL;
@@ -210,6 +222,7 @@ int argp_parse(
                             cb_ret = cb(-c, NULL, data);
                             if(cb_ret > 0)
                             {
+                                free(long_param);
                                 return cb_ret;
                             }
                         }
@@ -244,6 +257,7 @@ int argp_parse(
                                 cb_ret = cb(cur_param->id, cur_arg, data);
                                 if(cb_ret > 0)
                                 {
+                                    free(long_param);
                                     return cb_ret;
                                 }
                                 cur_arg = &c0;                            
@@ -253,6 +267,7 @@ int argp_parse(
                                 cb_ret = cb(cur_param->id, NULL, data);
                                 if(cb_ret > 0)
                                 {
+                                    free(long_param);
                                     return cb_ret;
                                 }
                             }
@@ -266,6 +281,7 @@ int argp_parse(
                                 long_param, data);
                             if(cb_ret > 0)
                             {
+                                free(long_param);
                                 return cb_ret;
                             }
                             state = ARGP_PLAIN_VALUE;
@@ -288,6 +304,7 @@ int argp_parse(
                                 long_param, data);
                             if(cb_ret > 0)
                             {
+                                free(long_param);
                                 return cb_ret;
                             }
                             cur_arg = &c0;
@@ -305,6 +322,7 @@ int argp_parse(
                     cb_ret = cb(cur_param->id, NULL, data);
                     if(cb_ret > 0)
                     {
+                        free(long_param);
                         return cb_ret;
                     }
                     cur_param = NULL;                    
@@ -317,13 +335,14 @@ int argp_parse(
                     cb_ret = cb(cur_param->id, cur_arg, data);
                     if(cb_ret > 0)
                     {
+                        free(long_param);
                         return cb_ret;
                     }
                     cur_param = NULL;
                     state = ARGP_PLAIN_VALUE;
                     cur_arg = &c0;
                 }
-                break;
+                break;            
         }        
     }
         
@@ -341,6 +360,7 @@ int argp_parse(
             cb_ret = cb(-256, long_param, data);
             if(cb_ret > 0)
             {
+                free(long_param);
                 return cb_ret;
             }
         }
@@ -352,10 +372,12 @@ int argp_parse(
         cb_ret = cb(cur_param->id, NULL, data);
         if(cb_ret > 0)
         {
+            free(long_param);
             return cb_ret;
         }
         cur_param = NULL;
     }
     
+    free(long_param);
     return ARGP_OK;
 }

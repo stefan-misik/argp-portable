@@ -30,6 +30,7 @@ typedef struct
  */
 typedef enum
 {
+    ARGP_NO_MEM = -2,   /** < Could not allocate memory */
     ARGP_NO_PARAM = -1,	/** < No arguments were supplied */
     ARGP_OK = 0,	/** < Everything is ok */    
     ARGP_CB_BREAK = 1   /** < All positive integers returned by callback will
